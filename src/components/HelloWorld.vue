@@ -1,7 +1,8 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h3 @click="testFn">{{test}}</h3>
+    <h1>HelloWorld</h1>
+    <h3 @click="testFn"
+      v-html="test"></h3>
   </div>
 </template>
 

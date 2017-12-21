@@ -4,18 +4,22 @@
     <div>
       <router-link to="/">Home</router-link>
     </div>
-    <div><h2>{{mode}}</h2></div>
-    <div><span>{{count}}</span></div>
-    <div><button @click="count++">+1</button></div>
+    <div>
+      <h2 v-html="mode"></h2>
+    </div>
+    <div><span v-html="count"></span></div>
+    <div>
+      <button @click="count++">+1</button>
+    </div>
   </div>
 </template>
 <script>
   export default {
-    data () {
+    data() {
       return {
-        mode: process.env.VUE_ENV === 'server' ? 'server' : 'client',
+        mode: process.env.VUE_ENV === "server" ? "server" : "client",
         count: 2
-      }
+      };
     }
-  }
+  };
 </script>
