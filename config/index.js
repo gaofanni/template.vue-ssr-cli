@@ -5,7 +5,6 @@
 const path = require("path");
 var glob = require('glob')
 var version = 1; //请配置活动版本，默认为1
-var title = '4399明星主播联赛，带你一起飞'; //请配置活动的标题
 
 let name = "{{ name }}"
 
@@ -26,9 +25,9 @@ module.exports = {
     build: {
         env: require("./prod.env"),
         index: path.resolve(__dirname, "../dist/index.html"),
-        assetsRoot: path.resolve(__dirname, "../release/vue-ssr"),
+        assetsRoot: path.resolve(__dirname, "../release/" + name),
         assetsSubDirectory: "static/" + entry,
-        assetsPublicPath: "/vue-ssr/",
+        assetsPublicPath: "/" + name + "/",
         productionSourceMap: true,
         // Gzip off by default as many popular static hosts such as
         // Surge or Netlify already gzip all static assets for you.
