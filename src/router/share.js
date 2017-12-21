@@ -9,7 +9,7 @@ export function createRouter() {
         mode: 'hash',
         routes: [{
             path: '/vuessrShare',
-            name: 'Hello',
+            name: 'vuessrShare',
             component: HelloWorld
         }, {
             path: '/test',

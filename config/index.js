@@ -21,7 +21,6 @@ module.exports = {
     entry: './src/entrances/' + entry + '/entry-client.js',
     entryName: entry,
     version: version,
-    title: title,
     build: {
         env: require("./prod.env"),
         index: path.resolve(__dirname, "../dist/index.html"),

@@ -16,9 +16,7 @@
     "dependencies": {
         "fancy-log": "^1.3.2",
         "gulp": "^3.9.1",
-        "gulp-shell": "^0.6.3",
-        "gulp-start-process": "^1.1.1",
-        "gulp-webpack": "^1.5.0",
+        "gulp-run": "^1.7.1",
         "koa": "^2.3.0",
         "multipipe": "^2.0.1",
         "vinyl-fs": "^3.0.0",

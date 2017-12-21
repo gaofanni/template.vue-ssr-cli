@@ -9,11 +9,10 @@ export function createRouter() {
         mode: 'hash',
         routes: [{
             path: '/',
-            name: 'Hello',
             component: HelloWorld
         }, {
             path: '/vuessrIndex',
-            name: 'Hello',
+            name: 'vuessrIndex',
             component: HelloWorld
         }, {
             path: '/test',
