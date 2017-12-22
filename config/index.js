@@ -3,11 +3,13 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require("path");
-var glob = require('glob')
-var version = 1; //请配置活动版本，默认为1
+let glob = require('glob')
+let version = 1; //请配置活动版本，默认为1
+let name = "test";
+let releasePath="../release/";//请配置打包后的输出路径
+let assetsPath="/y2017/game/" + name + "/";//请配置打包后的静态资源挂载路径
 
-let name = "{{ name }}"
-
+//获得入口名
 let entry;
 for (let n in process.argv) {
     n = process.argv[n]
@@ -24,9 +26,9 @@ module.exports = {
     build: {
         env: require("./prod.env"),
         index: path.resolve(__dirname, "../dist/index.html"),
-        assetsRoot: path.resolve(__dirname, "../../../release/" + name),
+        assetsRoot: path.resolve(__dirname, releasePath),
         assetsSubDirectory: "static/" + entry,
-        assetsPublicPath: "/" + name + "/",
+        assetsPublicPath: assetsPath,
         productionSourceMap: true,
         // Gzip off by default as many popular static hosts such as
         // Surge or Netlify already gzip all static assets for you.
