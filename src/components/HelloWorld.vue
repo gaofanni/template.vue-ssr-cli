@@ -10,6 +10,7 @@
   export default {
     name: "HelloWorld",
     asyncData({ store, route }) {
+      //服务端预取数据钩子
       return store.dispatch("getTest", { test: 2 });
     },
     computed: {
