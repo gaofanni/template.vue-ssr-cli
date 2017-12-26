@@ -1,5 +1,5 @@
 {
-    "name": "vue-ssr-cli",
+    "name": "{{name}}",
     "version": "1.0.0",
     "description": "多入口vue-ssr-cli",
     "author": "gaofanni",
