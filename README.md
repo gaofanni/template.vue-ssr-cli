@@ -7,7 +7,13 @@
 ## Build Setup
 
 ``` bash
-# install dependencies
+# 全局安装huodong
+npm install huodong-cli -g
+
+# 安装vue-ssr-cli
+huodong init vue-ssr-cli
+
+# 进入文件夹安装依赖
 npm install
 
 # 打包生成环境与服务器端渲染资源
@@ -16,6 +22,7 @@ gulp
 
 # 启动本地服务
 npm run dev
+
 ```
 # client部分说明
 ---
@@ -108,11 +115,17 @@ index:async (ctx, next) => {
 ```
 * view渲染模板
 ```bash
-`views/项目名/index.html`
+'views/项目名/index.html'
 
 # 服务端直出的html内容插入于<!--vue-ssr-outlet-->中
 # js渲染后将其替换
 <body>
 <!--vue-ssr-outlet-->
 </body>
+
 ```
+---
+## 遇到的一些坑
+
+* 如果有图片，跑不动，报错css-loader找不到依赖，需重新cnpm install css-loader sass-loader style-loader node-sass --save
+* 
