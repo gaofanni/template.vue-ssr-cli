@@ -26,6 +26,7 @@ gulp.task('default', function (cb) {
     //打包服务端bundle
     for (let n in serverEntries) {
         exec('webpack --env.NODE_ENV=production --env.ENTRY=' + n + ' --config build/webpack.server.conf.js --progress --hide-modules', function (err, stdout) {
+            //命令行打印log
             console.log(stdout)
         })
     }
