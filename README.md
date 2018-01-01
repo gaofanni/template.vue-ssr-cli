@@ -39,6 +39,7 @@ npm run dev
 * 客户端和服务端必须复用相同的路由配置！
 * 客户端和服务端必须复用相同的路由配置！
 * 客户端和服务端必须复用相同的路由配置！（重要的事情说三遍）
+* 比如现在的服务端路径大多为"/y2017/平台名/项目名"，那么vue-router也需要一模一样的配置
 * 示例使用的是hash模式，即客户端与服务端只需要首页路由一致
 * 要使用histroy模式，页面级路由要完全一致
 
@@ -50,8 +51,9 @@ npm run dev
 
 ---
 ## 配置
-* 配置项config/index.js内进行配置文件打包地址与静态资源挂载地址
-* 注意：服务端输出地址挂载在路由路径下，如果跑通后静态资源报错，请检查静态资源挂载地址
+* 配置项config/index.js内进行配置文件打包地址与静态资源挂载地址  
+* 默认打包出来的css图片路径是按照"项目名/static/入口名/"的层级放置，如果需要更改，请到build/utils内的ExtractTextPlugin.publicPath中进行修改
+
 ---
 # server部分说明
 
@@ -89,6 +91,7 @@ module.exports = function renderToString() {
 }
 
 # 此文件在tool/vueSsr.js可以直接使用
+
  ```
 * 在查找路由时调用renderToString即可直出html
 ``` bash
@@ -98,14 +101,14 @@ index:async (ctx, next) => {
     try {
         # 调用renderToString方法直出对象
         let html = await renderToString({
-            context: {
-                title: ctx.request.url,
-                url: ctx.request.url
-            },
+            ctx,#上下文，一定要传
             project:'test',#项目名
             entry:'index',#入口名，也就是client中entrances内文件夹名
             year:2017,#年份，用于y2017/的拼写
             plat:'game'#平台名称，游戏盒，游拍等
+        },{
+            #这边放置模版插值内容，
+            #有需要直出数据到模板的话在这里填写
         });
         ctx.body = html;
     } catch (res) {
@@ -127,5 +130,5 @@ index:async (ctx, next) => {
 ---
 ## 遇到的一些坑
 
-* 如果有图片，跑不动，报错css-loader找不到依赖，需重新cnpm install css-loader sass-loader style-loader node-sass --save
-* 
+* 如果有图片，跑不动，报错css-loader找不到依赖，需重新npm install css-loader sass-loader style-loader node-sass --save    
+* 首页直出的所有组件的created和beforeCreate钩子、import进组件的模块中的定义、data的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错

@@ -11,7 +11,6 @@ const config = require('../config')
 baseConfig.module.rules[1].options = ''
 
 //删除原release文件夹
-console.log(config.build.assetsRoot, '1111111111111');
 rm(config.build.assetsRoot, function () {
     console.log('删除release')
 })
