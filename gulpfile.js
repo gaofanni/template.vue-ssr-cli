@@ -1,5 +1,5 @@
 var gulp = require('gulp')
-var run = require('gulp-run')
+var exec = require('child_process').exec;
 var glob = require('glob')
 var path = require('path')
 
@@ -25,10 +25,14 @@ var clientEntries = getEntry('./src/entrances/**/entry-client.js');
 gulp.task('default', function (cb) {
     //打包服务端bundle
     for (let n in serverEntries) {
-        run('webpack --env.NODE_ENV=production --env.ENTRY=' + n + ' --config build/webpack.server.conf.js --progress --hide-modules').exec()
+        exec('webpack --env.NODE_ENV=production --env.ENTRY=' + n + ' --config build/webpack.server.conf.js --progress --hide-modules', function (err, stdout) {
+            console.log(stdout)
+        })
     }
     //打包客户端bundle
     for (let n in clientEntries) {
-        run('node build/build.js cross-env ENTRY=' + n).exec()
+        exec('node build/build.js cross-env ENTRY=' + n, function (err, stdout) {
+            console.log(stdout)
+        })
     }
 })
