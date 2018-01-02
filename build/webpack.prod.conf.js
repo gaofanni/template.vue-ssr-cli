@@ -137,11 +137,4 @@ if (config.build.bundleAnalyzerReport) {
 //         new HtmlWebpackPlugin(config.template[i])
 //     )
 // }
-// for (let i in config.entries) {
-//     webpackConfig.plugins.push(
-//         new VueSSRClientPlugin({
-//             filename: 'client-manifest-' + i + '.json'
-//         })
-//     )
-// }
 module.exports = webpackConfig
