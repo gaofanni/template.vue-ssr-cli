@@ -7,7 +7,7 @@ let glob = require('glob')
 let version = 1; //请配置活动版本，默认为1
 let name = "{{name}}";
 let releasePath = "../release/"; //请配置打包后的输出路径
-let assetsPath = "/y2017/game/" + name + "/"; //请配置打包后的静态资源挂载路径
+let assetsPath = "./"; //请配置打包后的静态资源挂载路径
 
 //获得入口名
 let entry;
