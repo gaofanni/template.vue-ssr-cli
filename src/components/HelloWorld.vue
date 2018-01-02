@@ -53,7 +53,7 @@
     color: #42b983;
   }
   .img {
-    background-image: url("../assets/logo.png");
+    background-image: url("../images/logo.png");
     width: 200px;
     height: 200px;
     margin: 0 auto;
