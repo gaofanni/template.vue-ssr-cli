@@ -23,6 +23,17 @@ module.exports = {
     entry: './src/entrances/' + entry + '/entry-client.js',
     entryName: entry,
     version: version,
+    template: {
+        filename: entry + '.html',
+        template: './src/template.ejs',
+        inject: true,
+        chunks: ['main', 'vendor', 'manifest'],
+        chunksSortMode: 'dependency',
+        minify: { //压缩打包的模板内注释
+            removeComments: true,
+            minifyJS: true
+        }
+    },
     build: {
         env: require("./prod.env"),
         index: path.resolve(__dirname, "../dist/index.html"),

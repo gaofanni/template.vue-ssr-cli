@@ -52,7 +52,7 @@ npm run dev
 ---
 ## 配置
 * 配置项config/index.js内进行配置文件打包地址与静态资源挂载地址  
-* 默认打包出来的css图片路径是按照"项目名/static/入口名/"的层级放置，如果需要更改，请到build/utils内的ExtractTextPlugin.publicPath中进行修改
+* 默认打包出来的css图片路径是按照"项目名/static/入口名/"的层级放置，如果需要更改，请到build/utils中`ExtractTextPlugin.extract({publicPath:配置地址})`  
 
 ---
 # server部分说明
@@ -132,3 +132,13 @@ index:async (ctx, next) => {
 
 * 如果有图片，跑不动，报错css-loader找不到依赖，需重新npm install css-loader sass-loader style-loader node-sass --save    
 * 首页直出的所有组件的created和beforeCreate钩子、import进组件的模块中的定义、data的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错
+---
+## 保险措施，打包出纯前端页面
+
+* 防止服务端渲染导致服务器崩溃，增加纯前端渲染模板入口以备不时之需
+* >问题：服务端渲染开发过程中增加假数据在模板上，注释后打包出的模板也包含假数据注释，并不合适  
+  >解决：增加模板minify功能，对注释打包消除
+* 开发过程client与server分离，效率更高
+* >问题：client请求server接口，不同端口跨域问题  
+  >解决：server增加koa2-cors允许跨域，判断条件暂时为，请求内参数带有debug=1&&host为localhost时支持跨域  
+

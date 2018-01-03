@@ -17,7 +17,6 @@ spinner.start()
 
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
     if (err) throw err
-        // webpackConfig.entry = './src/entrances/' + entry + '/entry-server.js';
     webpack(webpackConfig, function(err, stats) {
         spinner.stop()
         if (err) throw err

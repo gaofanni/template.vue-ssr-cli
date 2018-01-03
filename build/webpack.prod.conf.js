@@ -132,9 +132,8 @@ if (config.build.bundleAnalyzerReport) {
     const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
     webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
-// for (var i in config.template) {
-//     webpackConfig.plugins.push(
-//         new HtmlWebpackPlugin(config.template[i])
-//     )
-// }
+//打包模板
+webpackConfig.plugins.push(
+    new HtmlWebpackPlugin(config.template)
+)
 module.exports = webpackConfig
