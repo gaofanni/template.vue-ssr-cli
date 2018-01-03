@@ -122,31 +122,29 @@ DealImages.prototype.writeStylesheet = function(data) {
 
     let outputPath = this.outputPath + 'images.scss';
     //判断输出路径文件夹是否存在
-    if (!fs.existsSync(this.outputPath)) {
-        function mkdir(dirpath, dirname) {
-            //判断是否是第一次调用  
-            if (typeof dirname === "undefined") {
-                if (fs.existsSync(dirpath)) {
-                    return;
-                } else {
-                    mkdir(dirpath, path.dirname(dirpath));
-                }
+    function mkdir(dirpath, dirname) {
+        //判断是否是第一次调用  
+        if (typeof dirname === "undefined") {
+            if (fs.existsSync(dirpath)) {
+                return;
             } else {
-                //判断第二个参数是否正常，避免调用时传入错误参数  
-                if (dirname !== path.dirname(dirpath)) {
-                    mkdir(dirpath);
-                    return;
-                }
-                if (fs.existsSync(dirname)) {
-                    fs.mkdirSync(dirpath)
-                } else {
-                    mkdir(dirname, path.dirname(dirname));
-                    fs.mkdirSync(dirpath);
-                }
+                mkdir(dirpath, path.dirname(dirpath));
+            }
+        } else {
+            //判断第二个参数是否正常，避免调用时传入错误参数  
+            if (dirname !== path.dirname(dirpath)) {
+                mkdir(dirpath);
+                return;
+            }
+            if (fs.existsSync(dirname)) {
+                fs.mkdirSync(dirpath)
+            } else {
+                mkdir(dirname, path.dirname(dirname));
+                fs.mkdirSync(dirpath);
             }
         }
-        mkdir(this.outputPath);
     }
+    mkdir(this.outputPath);
     fs.writeFile(outputPath, template, (err) => {
         if (err) {
             console.log(err);
