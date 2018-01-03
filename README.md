@@ -24,6 +24,25 @@ gulp
 npm run dev
 
 ```
+
+## 基本文件结构
+
+```bash
+
+    -build
+        -utils.js#css图片路径在这里配置
+        -webpack.base.conf.js#基本配置入口，包括base64限制大小，现默认60k
+        -webpack.prod.conf.js#打包client-manifest入口
+        -webpack.server.conf.js#打包server-bundle入口
+    -config
+        -index.js#配置的入口文件，大多数配置在这里修改
+    -src
+        -entrances#入口文件夹
+    -static
+    images.js#这是曹志辉写的根据图片自动生成scss的脚本，很好用
+    gulpfile.js#执行gulp打包
+
+```
 # client部分说明
 ---
 ## 入口文件说明
@@ -130,8 +149,11 @@ index:async (ctx, next) => {
 ---
 ## 遇到的一些坑
 
-* 如果有图片，跑不动，报错css-loader找不到依赖，需重新npm install css-loader sass-loader style-loader node-sass --save    
-* 首页直出的所有组件的created和beforeCreate钩子、import进组件的模块中的定义、data的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错
+* 如果有图片，跑不动，报错css-loader找不到依赖，需重新`npm install css-loader sass-loader style-loader node-sass --save `   
+* 首页渲染周期的理解
+  >报错：`window，localstorage is not defined`  
+  >原因：首页直出的所有组件的`created`和`beforeCreate`钩子、`import`进组件的模块中的定义、`data`的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错
+  >解决：如需定义`data`与`window`相关联，在mounted钩子内再定义；import的模块需谨慎，小心不要引入带有client变量，如果一定需要引入，可异步在调用时引入
 ---
 ## 保险措施，打包出纯前端页面
 
