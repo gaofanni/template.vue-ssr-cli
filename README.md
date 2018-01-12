@@ -153,7 +153,10 @@ index:async (ctx, next) => {
 * 首页渲染周期的理解
   >报错：`window，localstorage is not defined`  
   >原因：首页直出的所有组件的`created`和`beforeCreate`钩子、`import`进组件的模块中的定义、`data`的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错
-  >解决：如需定义`data`与`window`相关联，在mounted钩子内再定义；import的模块需谨慎，小心不要引入带有client变量，如果一定需要引入，可异步在调用时引入
+  >解决：如需定义`data`与`window`相关联，在mounted钩子内再定义；import的模块需谨慎，小心不要引入带有client变量，如果一定需要引入，可异步在调用时引  
+* 静态资源线上部署与cdn，线下本地访问，也就是线上与测试时的静态资源路径不一致
+* >问题：由于服务端渲染地址是通过webpack打包出，无法用模板插值的方式将静态地址直出到页面，如果要改变地址，则要上线后重新打包，修改地址，效率低下  
+  >解决：node端开静态资源请求代理，判断是否线上请求，如果是线上则代理转发到cdn域名下，比较灵活
 ---
 ## 保险措施，打包出纯前端页面
 
@@ -162,5 +165,7 @@ index:async (ctx, next) => {
   >解决：增加模板minify功能，对注释打包消除
 * 开发过程client与server分离，效率更高
 * >问题：client请求server接口，不同端口跨域问题  
-  >解决：server增加koa2-cors允许跨域，判断条件暂时为，请求内参数带有debug=1&&host为localhost时支持跨域  
+  >解决：server增加koa2-cors允许跨域，判断条件暂时为，请求内参数带有debug=1&&host为localhost时支持跨域 
+* 纯前端页面部署在cdn，host与node端不一致，请求存在跨域问题
+* >解决：node端开允许跨域，允许cdn所属host的跨域请求
 

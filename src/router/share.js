@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import HelloWorld from '../pages/HelloWorld'
 
 Vue.use(Router)
 
@@ -19,7 +19,7 @@ export function createRouter() {
             path: '/test',
             name: 'Test',
             component: () =>
-                import ('@/components/Test')
+                import('../pages/Test')
         }]
     })
 }
