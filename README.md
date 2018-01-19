@@ -17,7 +17,7 @@ huodong init vue-ssr-cli
 npm install
 
 # 打包生成环境与服务器端渲染资源
-# gulp脚本执行多入口打包
+# 用webpack打包无法实现多入口打包，打包出来的结果会将多入口打包在一起，导致路由访问错误，所以改用gulp打包
 gulp
 
 # 启动本地服务
@@ -38,12 +38,14 @@ npm run dev
         -index.js#配置的入口文件，大多数配置在这里修改
     -src
         -entrances#入口文件夹
+        -router#路由
+        -store#仓库
     -static
-    images.js#这是曹志辉写的根据图片自动生成scss的脚本，很好用
+    images.js#这是曹志辉写的根据图片(src/images)自动生成scss的脚本（生成地址：src/common/sass/），很好用
     gulpfile.js#执行gulp打包
 
 ```
-# client部分说明
+# client部分说明：前端开发部分
 ---
 ## 入口文件说明
 * 新增入口需在src/entrances内新建文件夹
@@ -58,7 +60,7 @@ npm run dev
 * 客户端和服务端必须复用相同的路由配置！
 * 客户端和服务端必须复用相同的路由配置！
 * 客户端和服务端必须复用相同的路由配置！（重要的事情说三遍）
-* 比如现在的服务端路径大多为"/y2017/平台名/项目名"，那么vue-router也需要一模一样的配置
+  > 比如现在的服务端路径大多为"/y2017/平台名/项目名"，那么vue-router也需要一模一样的配置:`new Router({path: '/y2017/game/vuessr/index'})`
 * 示例使用的是hash模式，即客户端与服务端只需要首页路由一致
 * 要使用histroy模式，页面级路由要完全一致
 
@@ -67,6 +69,17 @@ npm run dev
 * 在服务端渲染期间，本质上是渲染应用程序的“快照”，所以数据渲染需要预取
 * 路由组件上暴露出一个预取钩子`asyncData`
 * `asyncData` 在服务端调用，即可直出带有数据的html
+  ```bash
+   #使用方式
+
+   # 需返回一个promise，让服务端等待数据预取
+   # 此勾子只会在服务端执行，客户端不调用
+   # 回调参数为{仓库，路由，上下文}
+   asyncData({ store, route, ctx }) {
+       #ctx为koa中的ctx
+      return store.dispatch("getTest", { test: 2 });
+   }
+  ```
 
 ---
 ## 配置
@@ -74,32 +87,66 @@ npm run dev
 * 默认打包出来的css图片路径是按照"项目名/static/入口名/"的层级放置，如果需要更改，请到build/utils中`ExtractTextPlugin.extract({publicPath:配置地址})`  
 
 ---
-# server部分说明
+# server部分说明：node部分
 
 ## 路由配置
 * 在对应controllers内添加与服务端路由对应的routerName.js
  ``` bash
 const { createBundleRenderer } = require("vue-server-renderer");
+
 # 使用vue-server-renderer方法
 # 将打包后的json文件渲染至模板上
-function render(){
-    createBundleRenderer(
-        # server-bundle地址
-        require(mainPath + "/server-bundle-" + entry + ".json"), {
-            runInNewContext: false,
-            # 模板html文件
-            template: fs.readFileSync(resolve(viewPath + "/index.html"), "utf-8"),
-            # client manifest
-            clientManifest: require(mainPath + "/client-manifest-" + entry + ".json")
+function render({ context, project, entry, year, plat }, data = {}) {
+    let releasePath = process.cwd() + '/release/y' + year + '/' + plat + '/' + project;
+    let serverPath = process.cwd() + '/server/y' + year + '/' + plat + '/views/' + project;
+
+    # 先进行模板插值
+    return new Promise(async(res, rej) => {
+        let file
+        let fileName = resolve(serverPath + "/index.ejs")
+        try {
+            #ejs模板插值
+            #用于将数据插入模板上，如meta标签等
+            file = await new Promise((resolve, reject) => {
+                ejs.renderFile(fileName, data, function(err, str) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(str)
+                    }
+                })
+            });
+        } catch (err) {
+            console.log(err)
         }
-    )
+        res(
+            createBundleRenderer(
+                require(releasePath + "/server-bundle-" + entry + ".json"), {
+                    # 推荐
+                    runInNewContext: false,
+                    # 模板html文件
+                    template: file,
+                    # client manifest
+                    clientManifest: require(releasePath + "/client-manifest-" + entry + ".json")
+                }
+            )
+        )
+    })
+
+
 }
-module.exports = function renderToString() {
-    return new Promise((resolve, reject) => {
-        render().renderToString(
-            context,
+
+
+module.exports = function renderToString(opt, data) {
+    if (!opt.project || !opt.entry || !opt.ctx || !opt.year || !opt.plat) {
+        throw '参数缺失 renderToString({ctx,project:项目名,entry:入口名,year:年份，plat:平台})'
+    }
+    return new Promise(async(resolve, reject) => {
+        let rend = await render(opt, data);
+        rend.renderToString(opt.ctx,
             (err, html) => {
                 if (err) {
+                    console.log(err)
                     reject(err)
                 } else {
                     resolve(html)
@@ -108,6 +155,7 @@ module.exports = function renderToString() {
         );
     });
 }
+
 
 # 此文件在tool/vueSsr.js可以直接使用
 
@@ -139,6 +187,9 @@ index:async (ctx, next) => {
 ```bash
 'views/项目名/index.html'
 
+# 支持ejs模板插值
+如：<%= meta %>
+
 # 服务端直出的html内容插入于<!--vue-ssr-outlet-->中
 # js渲染后将其替换
 <body>
@@ -150,11 +201,15 @@ index:async (ctx, next) => {
 ## 遇到的一些坑
 
 * 如果有图片，跑不动，报错css-loader找不到依赖，需重新`npm install css-loader sass-loader style-loader node-sass --save `   
+* 访问路径时，pm2 log报错404  
+  >可能原因：前端vue-router定义path与服务端访问路径不一致  
+* 访问路径是，报错：`name of undefined`  
+  >可能原因：renderToString调用时ctx参数没传
 * 首页渲染周期的理解
-  >报错：`window，localstorage is not defined`  
-  >原因：首页直出的所有组件的`created`和`beforeCreate`钩子、`import`进组件的模块中的定义、`data`的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错
-  >解决：如需定义`data`与`window`相关联，在mounted钩子内再定义；import的模块需谨慎，小心不要引入带有client变量，如果一定需要引入，可异步在调用时引  
-* 静态资源线上部署与cdn，线下本地访问，也就是线上与测试时的静态资源路径不一致
+  >报错：`window，localstorage is not defined`   
+  >原因：首页直出的所有组件的`created`和`beforeCreate`钩子和`beforeRouteEnter`、`beforeEach`等路由钩子、`import`进组件的模块中的定义、`data`的定义都会在服务端执行，所以一定不可以执行或调用window和localStorage这种服务端没有的变量不能使用，否则将会报错  
+  >解决：如需定义`data`与`window`相关联，在mounted钩子内再定义；import的模块需谨慎，小心不要引入带有client变量（如window、localstorage等），如果一定需要引入，可异步在调用时引入  
+* 静态资源在线上会部署到cdn，其他环境访问服务器下的地址，也就是线上与其他环境的静态资源路径不一致
 * >问题：由于服务端渲染地址是通过webpack打包出，无法用模板插值的方式将静态地址直出到页面，如果要改变地址，则要上线后重新打包，修改地址，效率低下  
   >解决：node端开静态资源请求代理，判断是否线上请求，如果是线上则代理转发到cdn域名下，比较灵活
 ---
@@ -163,9 +218,8 @@ index:async (ctx, next) => {
 * 防止服务端渲染导致服务器崩溃，增加纯前端渲染模板入口以备不时之需
 * >问题：服务端渲染开发过程中增加假数据在模板上，注释后打包出的模板也包含假数据注释，并不合适  
   >解决：增加模板minify功能，对注释打包消除
-* 开发过程client与server分离，效率更高
-* >问题：client请求server接口，不同端口跨域问题  
-  >解决：server增加koa2-cors允许跨域，判断条件暂时为，请求内参数带有debug=1&&host为localhost时支持跨域 
-* 纯前端页面部署在cdn，host与node端不一致，请求存在跨域问题
-* >解决：node端开允许跨域，允许cdn所属host的跨域请求
+* 开发过程中，一般会有两个本地服务：dev-server与node，当需要用dev-server请求node接口时，会存在因不同端口的跨域问题
+* >解决：node增加koa2-cors允许跨域，判断条件暂时为，请求内host为（192.168||localhost）时支持跨域 
+* 纯前端页面部署在cdn（m.img4399.com），域名与node端(mm.img4399.com)不一致，请求存在跨域问题
+* >解决：node端开允许跨域，允许cdn所属域名的跨域请求
 
