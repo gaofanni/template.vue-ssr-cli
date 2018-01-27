@@ -1,26 +1,31 @@
-var gulp = require('gulp')
-var exec = require('child_process').exec;
-var glob = require('glob')
-var path = require('path')
+const gulp = require('gulp')
+const exec = require('child_process').exec;
+const glob = require('glob')
+const path = require('path')
+const editor = require('gulp-json-editor')
+const releasePath = require('./config/index').build.assetsRoot;
 
 function getEntry(globPath) {
-    var entries = {},
+    var entries = {}, entryArr = [],
         basename, tmp, pathname, name;
 
     glob.sync(globPath).forEach(function (entry) {
         basename = path.basename(entry, path.extname(entry));
         tmp = entry.split('/');
         name = tmp[tmp.length - 2];
-        console.log(name)
+        entryArr.push(name);
         pathname = basename; // 正确输出js和html的路径
         entries[name] = entry;
     });
 
-    return entries;
+    return { entries, entryArr };
 }
 //获取服务端与客户端文件打包入口
-var serverEntries = getEntry('./src/entrances/**/entry-server.js');
-var clientEntries = getEntry('./src/entrances/**/entry-client.js');
+let serverEntryInfo = getEntry('./src/entrances/**/entry-server.js');
+let entryArr = serverEntryInfo.entryArr;
+var serverEntries = serverEntryInfo.entries;
+var clientEntries = getEntry('./src/entrances/**/entry-client.js').entries;
+
 
 gulp.task('default', function (cb) {
     //打包服务端bundle
@@ -34,6 +39,17 @@ gulp.task('default', function (cb) {
     for (let n in clientEntries) {
         exec('node build/build.js cross-env ENTRY=' + n, function (err, stdout) {
             console.log(stdout)
+
+            /**
+             * 由于资源打包过程中manifest与client-manifest打包的publicPath一致无法拆分
+             * 由gulp进行一次将client-manifest的publicPath替换cdn标志位为'%iamcdn%'
+             */
+            gulp.src(releasePath + '/client-manifest-*.json')
+                .pipe(editor({
+                    publicPath: '%iamcdn%'
+                }))
+                .pipe(gulp.dest(releasePath))
+
         })
     }
 })
