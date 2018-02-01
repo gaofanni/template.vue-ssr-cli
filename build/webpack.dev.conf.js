@@ -13,7 +13,7 @@ function getEntry(globPath) {
     var entries = {},
         basename, tmp, pathname, name;
 
-    glob.sync(globPath).forEach(function(entry) {
+    glob.sync(globPath).forEach(function (entry) {
         basename = path.basename(entry, path.extname(entry));
         tmp = entry.split('/');
         name = tmp[tmp.length - 2];
@@ -34,12 +34,13 @@ for (var i in baseWebpackConfig.entry) {
         inject: true,
         chunks: ["" + i, 'vendor', 'manifest'],
         title: config.title,
+        slot: '<div id=app />',
         chunksSortMode: 'dependency'
     });
 }
 
 // add hot-reload related code to entry chunks
-Object.keys(baseWebpackConfig.entry).forEach(function(name) {
+Object.keys(baseWebpackConfig.entry).forEach(function (name) {
     baseWebpackConfig.entry[name] = ["./build/dev-client"].concat(
         baseWebpackConfig.entry[name]
     );
