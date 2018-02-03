@@ -133,9 +133,9 @@ if (config.build.bundleAnalyzerReport) {
     webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 //打包模板
-webpackConfig.plugins.push(
-    new HtmlWebpackPlugin(config.template)
-)
+// webpackConfig.plugins.push(
+//     new HtmlWebpackPlugin(config.template)
+// )
 //打包服务端渲染模板
 webpackConfig.plugins.push(
     new HtmlWebpackPlugin(config.serverTemplate)

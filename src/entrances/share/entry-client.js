@@ -1,8 +1,12 @@
+
+/* 动态化异步静态文件的插入地址，使得模板可动态插入 */
+__webpack_public_path__ = window.__webpack_public_path__;
+
 import { createApp } from './index'
 const { app, router, store } = createApp()
-    //在使用template时，context.state作为window.__INITIAL_STATE__的状态
-    //自动嵌入html中，
-    //在客户端时，挂在到应用程序前，就会获取到状态
+//在使用template时，context.state作为window.__INITIAL_STATE__的状态
+//自动嵌入html中，
+//在客户端时，挂在到应用程序前，就会获取到状态
 if (window.__INITIAL_STATE__) {
     store.replaceState(window.__INITIAL_STATE__)
 }
