@@ -1,6 +1,8 @@
 
 /* 动态化异步静态文件的插入地址，使得模板可动态插入 */
-__webpack_public_path__ = window.__webpack_public_path__;
+if (process.env.NODE_ENV !== 'development') {
+    __webpack_public_path__ = window.__webpack_public_path__;
+}
 
 import { createApp } from './index'
 const { app, router, store } = createApp()
