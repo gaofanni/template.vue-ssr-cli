@@ -4,10 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
-    <script>
-        /* 异步模块加载地址注入 */
-        window.__webpack_public_path__='%iamcdn%';
-    </script>
+    <%= htmlWebpackPlugin.options.publicPath %>
     <script>
         /*rem初始化*/ ! function(a) {
             function b() {

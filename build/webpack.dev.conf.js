@@ -9,6 +9,7 @@ const FriendlyErrorsPlugin = require("friendly-errors-webpack-plugin");
 const glob = require('glob')
 const path = require('path')
 
+/* 获取入口名 */
 function getEntry(globPath) {
     var entries = {},
         basename, tmp, pathname, name;
@@ -17,14 +18,13 @@ function getEntry(globPath) {
         basename = path.basename(entry, path.extname(entry));
         tmp = entry.split('/');
         name = tmp[tmp.length - 2];
-        console.log(name)
         pathname = basename; // 正确输出js和html的路径
         entries[name] = entry;
     });
 
     return entries;
 }
-
+/* 配置多页面dev模板信息 */
 baseWebpackConfig.entry = getEntry('./src/entrances/**/entry-client.js');
 let tml = [];
 for (var i in baseWebpackConfig.entry) {
@@ -32,7 +32,7 @@ for (var i in baseWebpackConfig.entry) {
         filename: 'view/' + i + '.html',
         template: './src/template.ejs',
         inject: true,
-        chunks: ["" + i, 'vendor', 'manifest'],
+        publicPath: `<script>window.__webpack_public_path__='/'</script>`,
         title: config.title,
         slot: '<div id=app />',
         chunksSortMode: 'dependency'
@@ -45,7 +45,6 @@ Object.keys(baseWebpackConfig.entry).forEach(function (name) {
         baseWebpackConfig.entry[name]
     );
 });
-console.log(baseWebpackConfig.tml)
 
 var devConfig = merge(baseWebpackConfig, {
     module: {

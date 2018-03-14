@@ -17,7 +17,7 @@ let releasePath = "../release/"; //请配置打包后的输出路径
 let assetsPath = "./"; //请配置打包后的静态资源挂载路径
 let serverReleasePath = "../release/";//配置打包后的服务端渲染模板路径，将生成index.ejs供node入口的ssr插入
 
-//获得入口名
+//获得入口名,build使用
 let entry;
 for (let n in process.argv) {
     n = process.argv[n]
@@ -38,6 +38,7 @@ module.exports = {
         chunks: ['main', 'vendor', 'manifest'],
         chunksSortMode: 'dependency',
         slot: '<div id=app />',
+        publicPath: `<script>window.__webpack_public_path__='%iamcdn%'</script>`,
         title: title,
         minify: { //压缩打包的模板内注释
             removeComments: true,
@@ -51,6 +52,7 @@ module.exports = {
         chunks: ['main', 'vendor', 'manifest'],
         chunksSortMode: 'dependency',
         slot: '<!--vue-ssr-outlet-->',
+        publicPath: `<script>window.__webpack_public_path__='%iamcdn%'</script>`,
         title: title,
         minify: {
             minifyJS: true
