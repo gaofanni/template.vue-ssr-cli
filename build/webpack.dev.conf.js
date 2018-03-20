@@ -33,6 +33,7 @@ for (var i in baseWebpackConfig.entry) {
         template: './src/template.ejs',
         inject: true,
         publicPath: `<script>window.__webpack_public_path__='/'</script>`,
+        chunks: [`${i}`, 'vendor', 'manifest'],
         title: config.title,
         slot: '<div id=app />',
         chunksSortMode: 'dependency'
