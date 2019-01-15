@@ -85,7 +85,7 @@ module.exports = {
         assetsPublicPath: "/",
         proxyTable: {
             '/redirect/': {
-                target: 'http://mobi.4399tech.com',
+                target: '',
                 pathRewrite: {
                     '^/redirect/': '/redirect/'
                 },
